@@ -7,8 +7,8 @@
 # *******************************************************************************
 # ----------------user-define----------------------------------------------------
 # 这三项可以在项目根目录 `xcodebuild -list`查询到:
-export workspace= #*.xcworkspace
-export scheme=
+export workspace=*.xcworkspace
+export scheme=*
 export configuration=release # debug/release/
 # 配置存储旧包目录, 为了安全起见, 还是存起来吧
 export packageSaveDir=/tmp/packageSaveDir  # 最后不要加斜杠
@@ -87,7 +87,9 @@ logger "\033[34m Step 4.[*****************start build project*****************] 
 # 4.1执行构建
 # 不需要指定:CODE_SIGN_IDENTITY="$code_sign_indentity" 
 xcodebuild archive -workspace $workspace -scheme $scheme -configuration \
-$configuration -archivePath $archivePath -destination generic/platform=ios | xcpretty | tee -a ${packageLog}
+$configuration -archivePath $archivePath -destination generic/platform=ios \
+DWARF_DSYM_FOLDER_PATH=$exportPath DEBUG_INFORMATION_FORMAT='dwarf-with-dsym' \
+| xcpretty | tee -a ${packageLog}
 
 # 4.2 若发现执行码非0,表示失败了,
 if [[ $? -eq 0 ]]; then
